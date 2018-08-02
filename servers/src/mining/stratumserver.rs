@@ -308,6 +308,7 @@ impl StratumServer {
 						.position(|r| r.id == workers_l[num].id)
 						.unwrap();
 					stratum_stats.worker_stats[worker_stats_id].last_seen = SystemTime::now();
+					stratum_stats.worker_stats[worker_stats_id].pow_difficulty = self.current_difficulty;
 
 					// Call the handler function for requested method
 					let response = match request.method.as_str() {
@@ -519,10 +520,16 @@ impl StratumServer {
 				return Err(serde_json::to_value(e).unwrap());
 			}
 			share_is_block = true;
+			worker_stats.num_blockmined += 1;
 			// Log message to make it obvious we found a block
 			warn!(
 				LOGGER,
-				"(Server ID: {}) Solution Found for block {} - Yay!!!", self.id, params.height
+				"Solution Found for block {} - Yay!!!\t   nonce {:<20}, from worker: {}, mined blocks: {}, shares: {}",
+				params.height,
+				params.nonce,
+				worker_stats.id,
+				worker_stats.num_blockmined,
+				worker_stats.num_accepted,
 			);
 		} else {
 			// Do some validation but dont submit
@@ -546,19 +553,22 @@ impl StratumServer {
 		}
 		// Log this as a valid share
 		let submitted_by = match worker.login.clone() {
-			None => worker.id.to_string(),
+			None => "worker:".to_owned() + &worker.id.to_string(),
 			Some(login) => login.clone(),
 		};
+		let gps = (worker_stats.num_accepted+worker_stats.num_rejected) as f64/
+				(0.1 + (worker_stats.first_seen.elapsed().unwrap().as_secs()/
+						Duration::from_secs(1).as_secs()) as f64);
 		info!(
 			LOGGER,
-			"(Server ID: {}) Got share for block: hash {}, height {}, nonce {}, difficulty {}/{}, submitted by {}",
-			self.id,
+			"Got share for block: hash {}, height {}, nonce {:<20}, difficulty {:5}/{: <5}, from {}. sps={}",
 			b.hash(),
 			b.header.height,
 			b.header.nonce,
 			share_difficulty,
 			self.current_difficulty,
 			submitted_by,
+			format!("{:.*}", 3, gps),
 		);
 		worker_stats.num_accepted += 1;
 		let submit_response;

@@ -70,10 +70,14 @@ pub struct WorkerStats {
 	pub id: String,
 	/// whether stratum worker is currently connected
 	pub is_connected: bool,
+	/// Timestamp of first communication with this worker
+	pub first_seen: SystemTime,
 	/// Timestamp of most recent communication with this worker
 	pub last_seen: SystemTime,
 	/// pow difficulty this worker is using
 	pub pow_difficulty: u64,
+	/// number of blocks mined
+	pub num_blockmined: u64,
 	/// number of valid shares submitted
 	pub num_accepted: u64,
 	/// number of invalid shares submitted
@@ -178,8 +182,10 @@ impl Default for WorkerStats {
 		WorkerStats {
 			id: String::from("unknown"),
 			is_connected: false,
+			first_seen: SystemTime::now(),
 			last_seen: SystemTime::now(),
 			pow_difficulty: 0,
+			num_blockmined: 0,
 			num_accepted: 0,
 			num_rejected: 0,
 			num_stale: 0,
