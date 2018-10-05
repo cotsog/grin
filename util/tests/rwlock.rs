@@ -16,7 +16,6 @@ extern crate grin_util as util;
 
 use util::rwlock::*;
 
-
 fn a() {
 	b();
 }
