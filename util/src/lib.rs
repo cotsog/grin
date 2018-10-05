@@ -39,6 +39,9 @@ extern crate serde_derive;
 extern crate walkdir;
 extern crate zip as zip_rs;
 
+extern crate chrono;
+
+
 // Re-export so only has to be included once
 pub extern crate secp256k1zkp as secp_;
 pub use secp_ as secp;
@@ -69,6 +72,8 @@ pub use hex::*;
 pub mod file;
 /// Compress and decompress zip bz2 archives
 pub mod zip;
+/// Observable RwLock
+pub mod rwlock;
 
 /// Encapsulation of a RefCell<Option<T>> for one-time initialization after
 /// construction. This implementation will purposefully fail hard if not used
