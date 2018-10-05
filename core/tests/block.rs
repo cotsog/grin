@@ -19,8 +19,8 @@ extern crate grin_util as util;
 extern crate grin_wallet as wallet;
 
 use std::sync::Arc;
-use util::rwlock::RwLock;
 use std::time::Instant;
+use util::rwlock::RwLock;
 
 pub mod common;
 
