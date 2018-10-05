@@ -155,10 +155,22 @@ impl<T: ?Sized> RwLock<T> {
 
 /// Util function to show the lock history of a RwLock
 pub fn parse_backtrace(lock_track: Arc<sync::RwLock<Vec<(DateTime<Utc>, Backtrace, bool)>>>) {
+	const NANO_TO_MILLIS: f64 = 1.0 / 1_000_000.0;
+
 	let lock_track = lock_track.clone();
 	let tracks = lock_track.read().unwrap();
-	for (call_time, one_call, locked) in &*tracks {
-		println!("\ncall time: {:?}, locked: {}\n", call_time, locked);
+	println!("\n-------------------------{}", Utc::now());
+	let mut now = Utc::now().timestamp_nanos();
+	let mut i = 0;
+	for (call_time, one_call, locked) in tracks.iter().rev() {
+		i += 1;
+		let time = call_time.timestamp_nanos();
+		let dur_ms = (now - time) as f64 * NANO_TO_MILLIS;
+		println!(
+			"\n#{} - call time: {:?}, locked: {}, delta: {:.3?}ms\n",
+			i, call_time, locked, dur_ms
+		);
 		println!("{:?}", one_call);
+		now = time;
 	}
 }
