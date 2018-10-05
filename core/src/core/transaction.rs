@@ -17,8 +17,9 @@
 use std::cmp::max;
 use std::cmp::Ordering;
 use std::collections::HashSet;
-use std::sync::{Arc, RwLock};
+use std::sync::Arc;
 use std::{error, fmt};
+use util::rwlock::RwLock;
 
 use consensus::{self, VerifySortOrder};
 use core::hash::Hashed;

@@ -21,9 +21,10 @@ use serde_json::Value;
 use std::error::Error;
 use std::io::{BufRead, ErrorKind, Write};
 use std::net::{TcpListener, TcpStream};
-use std::sync::{Arc, Mutex, RwLock};
+use std::sync::{Arc, Mutex};
 use std::time::{Duration, SystemTime};
 use std::{cmp, thread};
+use util::rwlock::RwLock;
 
 use chain;
 use common::stats::{StratumStats, WorkerStats};

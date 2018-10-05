@@ -14,7 +14,8 @@
 
 use std::collections::HashMap;
 use std::net::SocketAddr;
-use std::sync::{Arc, RwLock, Weak};
+use std::sync::{Arc, Weak};
+use util::rwlock::RwLock;
 
 use failure::ResultExt;
 use futures::future::ok;

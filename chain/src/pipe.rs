@@ -14,7 +14,8 @@
 
 //! Implementation of the chain block acceptance (or refusal) pipeline.
 
-use std::sync::{Arc, RwLock};
+use std::sync::Arc;
+use util::rwlock::RwLock;
 
 use chrono::prelude::Utc;
 use chrono::Duration;

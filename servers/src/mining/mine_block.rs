@@ -17,9 +17,10 @@
 
 use chrono::prelude::{DateTime, NaiveDateTime, Utc};
 use rand::{thread_rng, Rng};
-use std::sync::{Arc, RwLock};
+use std::sync::Arc;
 use std::thread;
 use std::time::Duration;
+use util::rwlock::RwLock;
 
 use chain;
 use common::types::Error;

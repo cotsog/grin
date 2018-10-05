@@ -18,8 +18,9 @@
 use std::collections::HashMap;
 use std::fs::File;
 use std::sync::atomic::{AtomicUsize, Ordering};
-use std::sync::{Arc, RwLock};
+use std::sync::{Arc, Mutex};
 use std::time::{Duration, Instant};
+use util::rwlock::RwLock;
 
 use lmdb;
 use lru_cache::LruCache;

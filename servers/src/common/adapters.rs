@@ -18,9 +18,10 @@
 use std::fs::File;
 use std::net::SocketAddr;
 use std::ops::Deref;
-use std::sync::{Arc, RwLock, Weak};
+use std::sync::{Arc, Weak};
 use std::thread;
 use std::time::Instant;
+use util::rwlock::RwLock;
 
 use chain::{self, ChainAdapter, Options, Tip};
 use common::types::{self, ChainValidationMode, ServerConfig, SyncState, SyncStatus};

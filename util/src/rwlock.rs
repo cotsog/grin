@@ -65,7 +65,6 @@ impl<T> RwLock<T> {
 }
 
 impl<T: ?Sized> RwLock<T> {
-
 	fn start_observing(&self) {
 		self.observing.store(true, Ordering::Relaxed);
 
