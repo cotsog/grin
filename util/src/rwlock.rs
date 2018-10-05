@@ -24,18 +24,21 @@ use chrono::prelude::*;
 use chrono::{Duration, Utc};
 
 /// Observable RwLock
-pub struct RwLock<T> {
-	/// Inner RwLock from stdlib
-	inner: sync::RwLock<T>,
+pub struct RwLock<T: ?Sized> {
 	/// Lock tracking
 	pub lock_track: Arc<sync::RwLock<Vec<(DateTime<Utc>, Backtrace, bool)>>>,
 	/// Flag to indicate observing on going
 	observing: Arc<AtomicBool>,
 	/// Channel for stopping observing
 	close_tx: Cell<Option<mpsc::Sender<()>>>,
+	/// Inner RwLock from stdlib
+	inner: sync::RwLock<T>,
 }
 
-impl<T> Drop for RwLock<T> {
+unsafe impl<T: ?Sized + Send> Send for RwLock<T> {}
+unsafe impl<T: ?Sized + Send + Sync> Sync for RwLock<T> {}
+
+impl<T: ?Sized> Drop for RwLock<T> {
 	fn drop(&mut self) {
 		println!("Dropping");
 		unsafe {
@@ -59,6 +62,9 @@ impl<T> RwLock<T> {
 
 		the_lock
 	}
+}
+
+impl<T: ?Sized> RwLock<T> {
 
 	fn start_observing(&self) {
 		self.observing.store(true, Ordering::Relaxed);
@@ -96,28 +102,6 @@ impl<T> RwLock<T> {
 			});
 	}
 
-	/// Observable RwLock Read Lock
-	pub fn read(&self) -> LockResult<RwLockReadGuard<T>> {
-		if !self.observing.load(Ordering::Relaxed) {
-			self.start_observing();
-		}
-		let call_time = self.backtrace_push();
-		let read = self.inner.read();
-		self.lock_success(call_time);
-		read
-	}
-
-	/// Observable RwLock Write Lock
-	pub fn write(&self) -> LockResult<RwLockWriteGuard<T>> {
-		if !self.observing.load(Ordering::Relaxed) {
-			self.start_observing();
-		}
-		let call_time = self.backtrace_push();
-		let write = self.inner.write();
-		self.lock_success(call_time);
-		write
-	}
-
 	// update lock status if lock success
 	fn lock_success(&self, call_time: DateTime<Utc>) {
 		let mut lock_track = self.lock_track.write().unwrap();
@@ -145,6 +129,28 @@ impl<T> RwLock<T> {
 		}
 
 		return call_time;
+	}
+
+	/// Observable RwLock Read Lock
+	pub fn read(&self) -> LockResult<RwLockReadGuard<T>> {
+		if !self.observing.load(Ordering::Relaxed) {
+			self.start_observing();
+		}
+		let call_time = self.backtrace_push();
+		let read = self.inner.read();
+		self.lock_success(call_time);
+		read
+	}
+
+	/// Observable RwLock Write Lock
+	pub fn write(&self) -> LockResult<RwLockWriteGuard<T>> {
+		if !self.observing.load(Ordering::Relaxed) {
+			self.start_observing();
+		}
+		let call_time = self.backtrace_push();
+		let write = self.inner.write();
+		self.lock_success(call_time);
+		write
 	}
 }
 
