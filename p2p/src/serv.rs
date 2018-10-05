@@ -15,7 +15,8 @@
 use std::fs::File;
 use std::net::{Shutdown, SocketAddr, TcpListener, TcpStream};
 use std::sync::atomic::{AtomicBool, Ordering};
-use std::sync::{Arc, RwLock};
+use std::sync::Arc;
+use util::rwlock::RwLock;
 use std::time::Duration;
 use std::{io, thread};
 

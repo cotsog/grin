@@ -14,7 +14,8 @@
 
 use std::collections::VecDeque;
 use std::net::{SocketAddr, TcpStream};
-use std::sync::{Arc, RwLock};
+use std::sync::Arc;
+use util::rwlock::RwLock;
 
 use rand::{thread_rng, Rng};
 

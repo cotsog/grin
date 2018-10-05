@@ -15,7 +15,8 @@
 use chrono::prelude::{DateTime, Utc};
 use chrono::Duration;
 use std::sync::atomic::{AtomicBool, Ordering};
-use std::sync::{Arc, RwLock};
+use std::sync::Arc;
+use util::rwlock::RwLock;
 use std::time;
 use std::{cmp, thread};
 

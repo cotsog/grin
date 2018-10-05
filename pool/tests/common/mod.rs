@@ -28,7 +28,8 @@ extern crate rand;
 
 use std::collections::HashSet;
 use std::fs;
-use std::sync::{Arc, RwLock};
+use std::sync::Arc;
+use util::rwlock::RwLock;
 
 use core::core::hash::{Hash, Hashed};
 use core::core::verifier_cache::VerifierCache;

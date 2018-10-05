@@ -13,7 +13,7 @@
 // limitations under the License.
 
 use std::sync::atomic::{AtomicBool, Ordering};
-use std::sync::{self, LockResult, RwLockReadGuard, RwLockWriteGuard};
+use std::sync::{self, LockResult, RwLockReadGuard, RwLockWriteGuard, TryLockResult};
 use std::sync::{mpsc, Arc};
 
 use std::cell::Cell;
@@ -40,7 +40,6 @@ unsafe impl<T: ?Sized + Send + Sync> Sync for RwLock<T> {}
 
 impl<T: ?Sized> Drop for RwLock<T> {
 	fn drop(&mut self) {
-		println!("Dropping");
 		unsafe {
 			if let Some(ref tx) = *self.close_tx.as_ptr() {
 				let _ = tx.send(());
@@ -139,6 +138,11 @@ impl<T: ?Sized> RwLock<T> {
 		let read = self.inner.read();
 		self.lock_success(call_time);
 		read
+	}
+
+	/// Observable RwLock Try_Read Lock
+	pub fn try_read(&self) -> TryLockResult<RwLockReadGuard<T>> {
+		self.inner.try_read()
 	}
 
 	/// Observable RwLock Write Lock

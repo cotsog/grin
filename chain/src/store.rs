@@ -14,7 +14,8 @@
 
 //! Implements storage primitives required by the chain
 
-use std::sync::{Arc, RwLock};
+use std::sync::Arc;
+use util::rwlock::RwLock;
 
 use croaring::Bitmap;
 use lmdb;

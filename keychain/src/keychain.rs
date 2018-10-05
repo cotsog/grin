@@ -17,7 +17,8 @@
 use rand::distributions::Alphanumeric;
 use rand::{thread_rng, Rng};
 use std::collections::HashMap;
-use std::sync::{Arc, RwLock};
+use std::sync::Arc;
+use util::rwlock::RwLock;
 
 use blake2;
 
@@ -28,7 +29,7 @@ use util::secp::key::SecretKey;
 use util::secp::pedersen::Commitment;
 use util::secp::{self, Message, Secp256k1, Signature};
 
-#[derive(Clone, Debug)]
+#[derive(Clone)]
 pub struct ExtKeychain {
 	secp: Secp256k1,
 	extkey: extkey::ExtendedKey,

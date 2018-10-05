@@ -25,7 +25,8 @@ extern crate rand;
 
 pub mod common;
 
-use std::sync::{Arc, RwLock};
+use std::sync::Arc;
+use util::rwlock::RwLock;
 
 use common::*;
 use core::core::verifier_cache::LruVerifierCache;

@@ -14,7 +14,8 @@
 
 //! Server types
 use std::convert::From;
-use std::sync::{Arc, RwLock};
+use std::sync::Arc;
+use util::rwlock::RwLock;
 
 use api;
 use chain;

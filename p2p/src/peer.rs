@@ -14,7 +14,8 @@
 
 use std::fs::File;
 use std::net::{SocketAddr, TcpStream};
-use std::sync::{Arc, RwLock};
+use std::sync::Arc;
+use util::rwlock::RwLock;
 
 use conn;
 use core::core;

@@ -23,12 +23,11 @@ use consensus::{
 	REFERENCE_SIZESHIFT,
 };
 use pow::{self, CuckooContext, Difficulty, EdgeType, PoWContext};
+use util::rwlock::RwLock;
 /// An enum collecting sets of parameters used throughout the
 /// code wherever mining is needed. This should allow for
 /// different sets of parameters for different purposes,
 /// e.g. CI, User testing, production values
-use std::sync::RwLock;
-
 /// Define these here, as they should be developer-set, not really tweakable
 /// by users
 
