@@ -75,7 +75,7 @@ impl<T: ?Sized> RwLock<T> {
 			.name("rwlock".to_string())
 			.spawn(move || {
 				loop {
-					if let Ok(_) = close_rx.recv_timeout(time::Duration::from_secs(90)) {
+					if let Ok(_) = close_rx.recv_timeout(time::Duration::from_secs(300)) {
 						break;
 					}
 
@@ -89,7 +89,7 @@ impl<T: ?Sized> RwLock<T> {
 						if let Some(lc) = last_call {
 							let now = Utc::now();
 							// log this possible dead-lock
-							if !lc.2 && now > lc.0 + Duration::minutes(1) {
+							if !lc.2 && now > lc.0 + Duration::minutes(3) {
 								parse_backtrace(lock_track.clone());
 								continue;
 							}
@@ -142,7 +142,15 @@ impl<T: ?Sized> RwLock<T> {
 
 	/// Observable RwLock Try_Read Lock
 	pub fn try_read(&self) -> TryLockResult<RwLockReadGuard<T>> {
-		self.inner.try_read()
+		if !self.observing.load(Ordering::Relaxed) {
+			self.start_observing();
+		}
+		let call_time = self.backtrace_push();
+		let read = self.inner.try_read();
+		if read.is_ok() {
+			self.lock_success(call_time);
+		}
+		read
 	}
 
 	/// Observable RwLock Write Lock
