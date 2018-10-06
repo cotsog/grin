@@ -116,14 +116,12 @@ impl Peers {
 
 	/// Get vec of peers we are currently connected to.
 	pub fn connected_peers(&self) -> Vec<Arc<RwLock<Peer>>> {
-		let mut res = self
-			.peers
-			.read()
-			.unwrap()
-			.values()
-			.filter(|p| p.read().unwrap().is_connected())
-			.cloned()
-			.collect::<Vec<_>>();
+		let mut res: Vec<Arc<RwLock<Peer>>> = vec![];
+		for peer in self.peers.read().unwrap().values() {
+			if peer.read().unwrap().is_connected() {
+				res.push(peer.clone());
+			}
+		}
 		thread_rng().shuffle(&mut res);
 		res
 	}
