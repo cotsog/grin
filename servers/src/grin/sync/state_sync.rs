@@ -14,7 +14,8 @@
 
 use chrono::prelude::{DateTime, Utc};
 use chrono::Duration;
-use std::sync::{Arc, RwLock};
+use std::sync::Arc;
+use util::rwlock::RwLock;
 
 use chain;
 use common::types::{Error, SyncState, SyncStatus};
