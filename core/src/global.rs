@@ -73,6 +73,12 @@ pub const TESTNET3_INITIAL_DIFFICULTY: u64 = 30000;
 /// we're sure this peer is a stuck node, and we will kick out such kind of stuck peers.
 pub const STUCK_PEER_KICK_TIME: i64 = 2 * 3600 * 1000;
 
+/// (Testnet3) Magic number expected in the header of every message
+pub const MAGIC: [u8; 2] = [0x1e, 0xc5];
+
+/// (Testnet4) Magic number expected in the header of every message
+pub const MAGIC_T4: [u8; 2] = [0x47, 0x31];
+
 /// Types of chain a server can run with, dictates the genesis block and
 /// and mining parameters used.
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]

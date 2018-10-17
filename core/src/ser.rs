@@ -22,6 +22,7 @@
 use byteorder::{BigEndian, ByteOrder, ReadBytesExt};
 use consensus;
 use core::hash::{Hash, Hashed};
+use global::{MAGIC, MAGIC_T4};
 use keychain::{BlindingFactor, Identifier, IDENTIFIER_SIZE};
 use std::io::{self, Read, Write};
 use std::{cmp, error, fmt, mem};
@@ -72,7 +73,15 @@ impl fmt::Display for Error {
 			Error::UnexpectedData {
 				expected: ref e,
 				received: ref r,
-			} => write!(f, "expected {:?}, got {:?}", e, r),
+			} => {
+				if e.clone() == MAGIC.to_vec() && r.clone() == MAGIC_T4.to_vec() {
+					write!(f, "expected MAGIC_T3: {:02x?}, got MAGIC_T4: {:02x?}", e, r)
+				} else if e.clone() == MAGIC_T4.to_vec() && r.clone() == MAGIC.to_vec() {
+					write!(f, "expected MAGIC_T4: {:02x?}, got MAGIC_T3: {:02x?}", e, r)
+				} else {
+					write!(f, "expected {:02x?}, got {:02x?}", e, r)
+				}
+			}
 			Error::CorruptedData => f.write_str("corrupted data"),
 			Error::TooLargeReadErr => f.write_str("too large read"),
 			Error::ConsensusError(ref e) => write!(f, "consensus error {:?}", e),
@@ -194,7 +203,10 @@ pub trait Reader {
 	fn read_fixed_bytes(&mut self, length: usize) -> Result<Vec<u8>, Error>;
 	/// Consumes a byte from the reader, producing an error if it doesn't have
 	/// the expected value
-	fn expect_u8(&mut self, val: u8) -> Result<u8, Error>;
+	fn expect_u8(&mut self, val: u8) -> Result<(), Error>;
+	/// Consumes 2 bytes from the reader, producing an error if it doesn't have
+	/// the expected value
+	fn expect_two_u8(&mut self, val1: u8, val2: u8) -> Result<(), Error>;
 }
 
 /// Trait that every type that can be serialized as binary must implement.
@@ -302,14 +314,27 @@ impl<'a> Reader for BinReader<'a> {
 			.map_err(map_io_err)
 	}
 
-	fn expect_u8(&mut self, val: u8) -> Result<u8, Error> {
+	fn expect_u8(&mut self, val: u8) -> Result<(), Error> {
 		let b = self.read_u8()?;
 		if b == val {
-			Ok(b)
+			Ok(())
 		} else {
 			Err(Error::UnexpectedData {
 				expected: vec![val],
 				received: vec![b],
+			})
+		}
+	}
+
+	fn expect_two_u8(&mut self, val1: u8, val2: u8) -> Result<(), Error> {
+		let b1 = self.read_u8()?;
+		let b2 = self.read_u8()?;
+		if b1 == val1 && b2 == val2 {
+			Ok(())
+		} else {
+			Err(Error::UnexpectedData {
+				expected: vec![val1, val2],
+				received: vec![b1, b2],
 			})
 		}
 	}

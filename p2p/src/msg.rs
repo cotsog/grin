@@ -22,6 +22,7 @@ use std::{thread, time};
 use core::consensus;
 use core::core::hash::Hash;
 use core::core::BlockHeader;
+use core::global::MAGIC;
 use core::pow::Difficulty;
 use core::ser::{self, Readable, Reader, Writeable, Writer};
 
@@ -33,9 +34,6 @@ pub const PROTOCOL_VERSION: u32 = 1;
 
 /// Grin's user agent with current version
 pub const USER_AGENT: &'static str = concat!("MW/Grin ", env!("CARGO_PKG_VERSION"));
-
-/// Magic number expected in the header of every message
-const MAGIC: [u8; 2] = [0x1e, 0xc5];
 
 /// Size in bytes of a message header
 pub const HEADER_LEN: u64 = 11;
@@ -305,8 +303,7 @@ impl Writeable for MsgHeader {
 
 impl Readable for MsgHeader {
 	fn read(reader: &mut Reader) -> Result<MsgHeader, ser::Error> {
-		reader.expect_u8(MAGIC[0])?;
-		reader.expect_u8(MAGIC[1])?;
+		reader.expect_two_u8(MAGIC[0], MAGIC[1])?;
 		let (t, len) = ser_multiread!(reader, read_u8, read_u64);
 		match Type::from_u8(t) {
 			Some(ty) => Ok(MsgHeader {
